@@ -16,25 +16,16 @@ rnd();
 
 for (let i = 0; i < x; i++) {
 	r = (i < 10) ? "0"+i : i;
-	
-	document.querySelector('#live').insertAdjacentHTML("beforeend",'<div class="row" id="row' + r + '"></div>');
-
+	$('#live').append('<div class="row" id="row' + r + '"></div>');
 	for (let j = 0; j < y; j++) {
 		a = (i < 10) ? "0"+i : i;
 		b = (j < 10) ? "0"+j : j;
 		if (cells[i][j] == 0){
 		dead = dead + 1;
-	
-		
-		document.querySelector('#row'+r).insertAdjacentHTML("beforeend",'<div class="btn btn-outline-warning" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h10zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"/></svg></div>');
-
-
-
+		$('#row'+r).append('<div class="btn btn-outline-warning" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h10zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"/></svg></div>');
 		} else {
 		alive = alive + 1;
-
-		document.querySelector('#row'+r).insertAdjacentHTML("beforeend",'<div class="btn btn-outline-success" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1-fill" viewBox="0 0 16 16"><path d="M3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3zm5 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div>');
-
+		$('#row'+r).append('<div class="btn btn-outline-success" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1-fill" viewBox="0 0 16 16"><path d="M3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3zm5 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div>');
 		}
 		$('#cell'+a+b).click(function() {
  			clickon(i,j);
@@ -42,27 +33,24 @@ for (let i = 0; i < x; i++) {
 }}
 
 
-document.querySelector('#cont').insertAdjacentHTML("beforeend",'<div id="run" class="btn btn-outline-dark">START</div>');
-
-document.querySelector('#run').addEventListener('click',function(){
+$('#cont').append('<div id="run" class="btn btn-outline-dark">START</div>');
+$('#run').on('click',function(){
 	timeint = setInterval("run();", 500);
 });
 
-document.querySelector('#cont').insertAdjacentHTML("beforeend",'<div id="clear" class="btn btn-outline-dark">CLEAR</div>');
-
-document.querySelector('#clear').addEventListener('click',function(){
+$('#cont').append('<div id="clear" class="btn btn-outline-dark">CLEAR</div>');
+$('#clear').on('click',function(){
 	clearInterval(timeint);
 	clear();
 });
 
-document.querySelector('#cont').insertAdjacentHTML("beforeend",'<div id="rnd" class="btn btn-outline-dark">RANDOM</div>');
-
-document.querySelector('#rnd').addEventListener('click',function(){
+$('#cont').append('<div id="rnd" class="btn btn-outline-dark">RANDOM</div>');
+$('#rnd').on('click',function(){
 	clearInterval(timeint);
 	rnd();
 });
 
-document.querySelector('#cont').insertAdjacentHTML("beforeend",'<div class="row" id="info"></div>');
+$('#cont').append('<div class="row" id="info"></div>');
 
 drowinfo();
 
@@ -86,7 +74,6 @@ function randomInteger(min, max) {
 function drowinfo(){
 	if (ca(cellsP, cellsN)) {
 		$('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
-		document.querySelector('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 		clearInterval(timeint);
 	} else {
 		$('#info').replaceWith('<div class="row" id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
