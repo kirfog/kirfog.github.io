@@ -85,26 +85,11 @@ function randomInteger(min, max) {
 
 function drowinfo(){
 	if (ca(cellsP, cellsN)) {
-
-
 		$('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
-
-
-
-									document.querySelector('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
-
-									
-									document.querySelector('#info').insertAdjacentHTML("beforeend",'<div class="row" id="info"> GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');	
-
-									
-
+		document.querySelector('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 		clearInterval(timeint);
 	} else {
-
-
 		$('#info').replaceWith('<div class="row" id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
-
-
 	}
 }
 
