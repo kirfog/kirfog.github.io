@@ -1,0 +1,20 @@
+body {
+overflow-x: hidden;
+-ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar { 
+    display: none; 
+}
+
+*:focus {
+    outline: 0;
+}
+
+#theWay {
+    padding: 5% 5%;
+}
+
+#theWay>div>div {
+  padding: 0 5%;
+}
