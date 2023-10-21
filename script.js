@@ -1,5 +1,3 @@
-
-
 let x = 20;
 let y = 20;
 let n = 0;
