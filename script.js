@@ -33,18 +33,18 @@ for (let i = 0; i < x; i++) {
 }}
 
 
-$('#cont').append('<div id="run" class="btn btn-outline-dark">START</div>');
+$('#cont').append('<div id="run" class="btn btn-warning">START</div>');
 $('#run').on('click',function(){
 	timeint = setInterval("run();", 500);
 });
 
-$('#cont').append('<div id="clear" class="btn btn-outline-dark">CLEAR</div>');
+$('#cont').append('<div id="clear" class="btn btn-warning">CLEAR</div>');
 $('#clear').on('click',function(){
 	clearInterval(timeint);
 	clear();
 });
 
-$('#cont').append('<div id="rnd" class="btn btn-outline-dark">RANDOM</div>');
+$('#cont').append('<div id="rnd" class="btn btn-warning">RANDOM</div>');
 $('#rnd').on('click',function(){
 	clearInterval(timeint);
 	rnd();
