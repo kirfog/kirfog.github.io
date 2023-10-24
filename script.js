@@ -1,5 +1,5 @@
 let x = 20;
-let y = 20;
+let y = 30;
 let n = 0;
 let dead = 0;
 let alive = 0;
@@ -34,24 +34,24 @@ for (let i = 0; i < x; i++) {
 		});
 }}
 
-$('#cont').append('<div id="run" class="btn btn-warning">START</div>');
+$('#cont').append('<div id="run" class="btn btn-outline-warning">START</div>');
 $('#run').on('click',function(){
 	timeint = setInterval("run();", 500);
 });
 
-$('#cont').append('<div id="clear" class="btn btn-warning">CLEAR</div>');
+$('#cont').append('<div id="clear" class="btn btn-outline-warning">CLEAR</div>');
 $('#clear').on('click',function(){
 	clearInterval(timeint);
 	clear();
 });
 
-$('#cont').append('<div id="rnd" class="btn btn-warning">RANDOM</div>');
+$('#cont').append('<div id="rnd" class="btn btn-outline-warning">RANDOM</div>');
 $('#rnd').on('click',function(){
 	clearInterval(timeint);
 	rnd();
 });
 
-$('#cont').append('<div id="info"></div>');
+$('#cont').append('<div class="btn btn-outline-warning" id="info"></div>');
 
 drowinfo();
 
@@ -74,10 +74,10 @@ function randomInteger(min, max) {
 
 function drowinfo(){
 	if (ca(cellsP, cellsN)) {
-		$('#info').replaceWith('<div id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
+		$('#info').replaceWith('<div class="btn btn-outline-warning" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 		clearInterval(timeint);
 	} else {
-		$('#info').replaceWith('<div id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
+		$('#info').replaceWith('<div class="btn btn-outline-warning" id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 	}
 }
 
