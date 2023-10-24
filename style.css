@@ -12,11 +12,3 @@ body::-webkit-scrollbar {
 *:focus {
     outline: 0;
 }
-
-#theWay {
-    padding: 5% 5%;
-}
-
-#theWay>div>div {
-  padding: 0 5%;
-}

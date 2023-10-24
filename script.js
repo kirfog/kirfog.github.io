@@ -12,26 +12,27 @@ let cellsN = Array(x).fill(0).map(x => Array(y).fill(0));
 let cellsA = Array(x+2).fill(0).map(x => Array(y+2).fill(0));
 let cellsB = Array(x+2).fill(0).map(x => Array(y+2).fill(0));
 
-rnd();
+let alivesvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>'
+let deadsvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sign-dead-end-fill" viewBox="0 0 16 16"><path d="M5.116 6.28h.32c.395 0 .582.24.582.722 0 .48-.186.718-.581.718h-.321V6.28Zm3.636.066.268.845h-.552l.27-.845h.014Zm1.327-.066h.32c.394 0 .582.24.582.722 0 .48-.186.718-.582.718h-.32V6.28Zm-.792 3h.32c.395 0 .582.24.582.722 0 .48-.186.718-.581.718h-.32V9.28Z"/><path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L.436 6.95c-.58.58-.58 1.519 0 2.098l6.516 6.516c.58.58 1.519.58 2.098 0l6.516-6.516c.58-.58.58-1.519 0-2.098L9.05.435ZM4.782 6h.69c.596 0 .886.355.886.998S6.066 8 5.473 8h-.69V6ZM7.82 7.72V8H6.571V6H7.82v.28h-.917v.57h.863v.268h-.863v.602h.917Zm.397.28h-.34l.688-2h.371l.689 2h-.352l-.177-.554h-.702L8.216 8Zm1.53-2h.69c.596 0 .886.355.886.998S11.03 8 10.436 8h-.69V6Zm-2.923 4.72V11H5.575V9h1.248v.28h-.917v.57h.863v.268h-.863v.602h.917Zm.572.28h-.32V9h.294l.933 1.436h.014V9h.32v2h-.292l-.936-1.44h-.013V11Zm1.56-2h.69c.596 0 .886.355.886.998S10.238 11 9.645 11h-.69V9Z"/></svg>'
 
+rnd();
 for (let i = 0; i < x; i++) {
 	r = (i < 10) ? "0"+i : i;
-	$('#live').append('<div class="row" id="row' + r + '"></div>');
+	$('#live').append('<div id="row' + r + '"></div>');
 	for (let j = 0; j < y; j++) {
 		a = (i < 10) ? "0"+i : i;
 		b = (j < 10) ? "0"+j : j;
 		if (cells[i][j] == 0){
 		dead = dead + 1;
-		$('#row'+r).append('<div class="btn btn-outline-warning" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h10zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"/></svg></div>');
+		$('#row'+r).append('<div class="col btn btn-outline-warning" id="cell' + a + b +'">' + deadsvg + '</div>');
 		} else {
 		alive = alive + 1;
-		$('#row'+r).append('<div class="btn btn-outline-success" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1-fill" viewBox="0 0 16 16"><path d="M3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3zm5 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div>');
+		$('#row'+r).append('<div class="col btn btn-outline-success" id="cell' + a + b +'">' + alivesvg + '</div>');
 		}
 		$('#cell'+a+b).click(function() {
  			clickon(i,j);
 		});
 }}
-
 
 $('#cont').append('<div id="run" class="btn btn-warning">START</div>');
 $('#run').on('click',function(){
@@ -50,7 +51,7 @@ $('#rnd').on('click',function(){
 	rnd();
 });
 
-$('#cont').append('<div class="row" id="info"></div>');
+$('#cont').append('<div id="info"></div>');
 
 drowinfo();
 
@@ -73,10 +74,10 @@ function randomInteger(min, max) {
 
 function drowinfo(){
 	if (ca(cellsP, cellsN)) {
-		$('#info').replaceWith('<div class="row" id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
+		$('#info').replaceWith('<div id="info">GAME OVER on turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 		clearInterval(timeint);
 	} else {
-		$('#info').replaceWith('<div class="row" id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
+		$('#info').replaceWith('<div id="info">Turn: '+ h + ' Dead: '+ dead +' Alive: '+ alive + '</div>');
 	}
 }
 
@@ -153,7 +154,7 @@ function ca(a, b) {
     return true;
 }
 
-function drowcells(){
+function drowcells(deadsvg, alivesvg){
 	for (let i = 0; i < x; i++) {
 		for (let j = 0; j < y; j++) {
 			if (cells[i][j] == 0){
@@ -185,7 +186,7 @@ function clickon(i,j){
 function died(i,j){
 	a = (i < 10) ? "0"+i : i;
 	b = (j < 10) ? "0"+j : j;
-	$('#cell'+a+b).replaceWith('<div class="btn btn-outline-warning" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h10zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"/></svg></div>');
+	$('#cell'+a+b).replaceWith('<div class="btn btn-outline-warning" id="cell' + a + b +'">' + deadsvg + '</div>');
 	$('#cell'+a+b).click(function() {
  		clickon(i,j);
 	});
@@ -194,7 +195,7 @@ function died(i,j){
 function born(i,j){
 	a = (i < 10) ? "0"+i : i;
 	b = (j < 10) ? "0"+j : j;
-	$('#cell'+a+b).replaceWith('<div class="btn btn-outline-success" id="cell' + a + b +'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dice-1-fill" viewBox="0 0 16 16"><path d="M3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3zm5 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div>');
+	$('#cell'+a+b).replaceWith('<div class="btn btn-outline-success" id="cell' + a + b +'">' + alivesvg + '</div>');
 	$('#cell'+a+b).click(function() {
  		clickon(i,j);
 	});
