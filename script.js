@@ -1,5 +1,5 @@
 let x = 20;
-let y = 30;
+let y = 20;
 let n = 0;
 let dead = 0;
 let alive = 0;
