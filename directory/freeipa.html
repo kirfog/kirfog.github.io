@@ -1,0 +1,305 @@
+<title>FreeIPA</title>
+
+<!-- Вводная карточка -->
+<div class="card">
+    <h2 class="title">
+        Руководство по миграции FreeIPA
+        <span class="status-badge">ACTIVE DOC</span>
+    </h2>
+    <p>
+        Существует несколько сценариев, при которых администраторы могут принять
+        решение о миграции FreeIPA — как в рамках одной платформы или ОС, так и
+        с переходом на сторонние дистрибутивы. Ниже описаны процедуры для
+        различных вариантов использования.
+    </p>
+</div>
+
+<!-- Раздел 1 -->
+<div class="card">
+    <h3 class="title">1. Миграция из других решений Identity Management</h3>
+    <p>
+        <strong>Миграция из NIS во FreeIPA:</strong> Подробные шаги описаны в
+        соответствующем руководстве RHEL Guide.
+    </p>
+    <p>
+        <strong>Миграция из LDAP во FreeIPA:</strong> См. главу в RHEL Guide или
+        изучите практический пример того, как проект GNOME мигрировал со схемы
+        OpenLDAP на инфраструктуру FreeIPA.
+    </p>
+    <button class="btn">Открыть RHEL Guide</button>
+</div>
+
+<!-- Раздел 2 -->
+<div class="card">
+    <h3 class="title">2. Миграция с одной инсталляции FreeIPA на другую</h3>
+    <p>
+        Если вам необходимо развернуть новую среду FreeIPA и вы не можете просто
+        создать реплику (например, если меняется имя Kerberos Realm), требуется
+        чистая установка и перенос данных.
+    </p>
+    <p>
+        Пользователи и группы могут быть перенесены с помощью команды
+        <code>migrate-ds</code>. Убедитесь, что атрибуты Kerberos
+        <strong>не переносятся</strong>, так как они должны быть сгенерированы
+        заново новым сервером.
+    </p>
+
+    <div class="info-box">
+        <strong>Внимание:</strong> Команда не переносит приватные группы
+        пользователей (User Private Groups).
+    </div>
+
+    <p>Рекомендуемая команда для миграции данных:</p>
+    <pre><code>$ echo Secret123 | ipa migrate-ds --bind-dn="cn=Directory Manager" --user-container=cn=users,cn=accounts --group-container=cn=groups,cn=accounts --group-objectclass=posixgroup --user-ignore-attribute={krbPrincipalName,krbextradata,krblastfailedauth,krblastpwdchange,krblastsuccessfulauth,krbloginfailedcount,krbpasswordexpiration,krbticketflags,krbpwdpolicyreference,mepManagedEntry} --user-ignore-objectclass=mepOriginEntry --with-compat ldap://migrated.freeipa.server.test</code></pre>
+
+    <div class="info-box">
+        <strong>Ограничение:</strong> До реализации тикета #3656, остальные
+        объекты (SUDO, HBAC, DNS и др.) переносятся вручную через экспорт LDIF,
+        пакетную правку атрибутов (новый realm) и импорт очищенного файла.
+    </div>
+</div>
+
+<!-- Раздел 3 -->
+<div class="card">
+    <h3 class="title">
+        3. Обновление существующего развертывания (In-place Upgrade)
+    </h3>
+    <p>
+        Перед началом процедуры убедитесь, что развертывание обладает
+        достаточной избыточностью (<strong>минимум 2 активные реплики</strong>).
+        Если обновление пойдет не так, оставшийся server обеспечит непрерывность
+        бизнес-процессов.
+    </p>
+
+    <p>Пошаговый план:</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Шаг</th>
+                <th>Действие</th>
+                <th>Команда проверки / Лог</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Обновление ОС и пакетов FreeIPA на выбранной реплике</td>
+                <td><code>/var/log/ipaupgrade.log</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Проверка распознавания пользователей системой</td>
+                <td><code>$ id $USER</code></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Проверка тикетов Kerberos и смены паролей</td>
+                <td><code>$ kinit $USER</code></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Проверка работоспособности CLI утилиты</td>
+                <td><code>$ ipa user-find</code></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Тестирование службы разрешения имен (DNS)</td>
+                <td><code>$ host $(hostname)</code></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Тестирование встроенного удостоверяющего центра (CA)</td>
+                <td><code>$ ipa cert-find</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Раздел 4 -->
+<div class="card">
+    <h3 class="title">4. Миграция на другую платформу или ОС</h3>
+    <p>
+        Если обновление в рамках одной операционной системы невозможно,
+        применяется метод последовательного ввода новых реплик:
+    </p>
+    <ol>
+        <li>
+            Сформируйте файл подготовки реплики:
+            <code>ipa-replica-prepare</code> и перенесите его на цель.
+        </li>
+        <li>
+            Установите сервер на новой ОС через
+            <code>ipa-replica-install</code>. Используйте флаг
+            <code>--setup-ca</code> и <code>--setup-dns</code>, если старый
+            сервер обслуживал DNS.
+        </li>
+        <li>
+            Выполните базовые тесты служб (<code>id</code>, <code>kinit</code>,
+            <code>ipa user-find</code>).
+        </li>
+        <li>
+            Обновите инфраструктуру: если DNS внешний, перепишите SRV-записи.
+            Если адреса прописаны жестко, измените конфигурации в
+            <code>/etc/sssd/sssd.conf</code> и <code>/etc/krb5.conf</code>.
+        </li>
+        <li>
+            Когда новые серверы полностью готовы, штатно остановите старые
+            хосты:
+            <pre><code># ipactl stop</code></pre>
+        </li>
+        <li>
+            После проверки стабильности клиентов окончательно удалите старые
+            узлы из топологии:
+            <pre><code>
+$ ipa-replica-manage list
+$ ipa-replica-manage del old.ipa.server.fqdn
+$ ipa-server-install --uninstall
+            </code></pre>
+        </li>
+    </ol>
+</div>
+
+<!-- Маркетинговый инфо-бокс с главным оффером -->
+<div class="info-box">
+    <strong>⚡ ЭКОНОМИЯ ДО 100% НА ЛИЦЕНЗИЯХ:</strong> Профессиональный перевод
+    вашей корпоративной инфраструктуры на Linux и FreeIPA под ключ от
+    сертифицированных инженеров.
+</div>
+
+<!-- Блок 1: Главный баннер / УТП -->
+<div class="card">
+    <h2 class="title" style="color: var(--accent-green)">
+        Импортозамещение без боли: Миграция на Linux и FreeIPA
+    </h2>
+    <p>
+        Ваша компания столкнулась с отзывом лицензий Microsoft, блокировками
+        обновлений или рисками предписаний регуляторов? Мы — команда
+        IT-аутсорсинга полного цикла — обеспечим
+        <strong>бесшовный переход</strong> вашей сети на Linux-платформы без
+        остановки бизнес-процессов.
+    </p>
+    <p>
+        <strong>Защитите свой бизнес:</strong>
+        <span class="status-badge">Готовые решения 2026</span>
+    </p>
+</div>
+
+<!-- Блок 2: Выгоды для бизнеса (Таблица сравнения расходов) -->
+<div class="card">
+    <h3 class="title">Зачем переходить на Linux + FreeIPA?</h3>
+    <p>
+        FreeIPA — это полноценная, бесплатная и безопасная замена Microsoft
+        Active Directory (AD). Давайте сравним, что получает ваш бизнес:
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Критерий</th>
+                <th>Инфраструктура Microsoft (AD)</th>
+                <th>Наше решение (Linux + FreeIPA)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Стоимость лицензий</strong></td>
+                <td style="color: var(--accent-orange)">
+                    Ежегодные миллионные затраты (CAL, OS)
+                </td>
+                <td style="color: var(--accent-green)">
+                    0 руб. — ПО с открытым исходным кодом
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Централизация</strong></td>
+                <td>Управление пользователями через AD</td>
+                <td>Единый каталог (Учетки, Доступы, Сертификаты, DNS)</td>
+            </tr>
+            <tr>
+                <td><strong>Юридическая безопасность</strong></td>
+                <td style="color: var(--accent-orange)">
+                    Риски блокировок и штрафов
+                </td>
+                <td style="color: var(--accent-green)">
+                    100% легально, независимость от санкций
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Поддержка</strong></td>
+                <td>Зависимость от ушедших вендоров</td>
+                <td>Круглосуточный аутсорсинг по SLA от нашей команды</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Блок 3: Как мы работаем (Этапы для клиента) -->
+<div class="card">
+    <h3 class="title">Наш подход к миграции</h3>
+    <p>
+        Мы гарантируем, что ваши бухгалтеры, менеджеры и директора не заметят
+        разницы при переходе. Процесс разбит на четкие этапы:
+    </p>
+    <ul>
+        <li>
+            <strong>Аудит инфраструктуры:</strong> Изучаем текущую AD, выявляем
+            зависимости и критический софт.
+        </li>
+        <li>
+            <strong>Пилотный проект:</strong> Развертываем тестовый контур
+            FreeIPA и настраиваем доверительные отношения с вашей текущей сетью.
+        </li>
+        <li>
+            <strong>Бесшовная миграция:</strong> Поэтапно переносим
+            пользователей и ПК без отрыва сотрудников от работы.
+        </li>
+        <li>
+            <strong>Сопровождение и SLA:</strong> Берем настроенную систему на
+            полноценный мониторинг и техподдержку 24/7.
+        </li>
+    </ul>
+</div>
+
+<!-- Блок 4: Призыв к действию (CTA-блок) -->
+<div
+    class="card"
+    style="
+        border: 1px solid var(--accent-green);
+        background-color: var(--bg-dark-box);
+    "
+>
+    <h3 class="title" style="color: var(--accent-green)">
+        Рассчитать стоимость миграции для вашей компании
+    </h3>
+    <p>
+        Оставьте заявку на бесплатный экспресс-аудит. Мы проанализируем
+        количество рабочих мест, серверов и подготовим точную смету экономии
+        бюджета.
+    </p>
+
+    <div style="margin-top: 20px">
+        <button class="btn" onclick="openOrderModal('Консультация')">
+            Получить коммерческое предложение
+        </button>
+        <button
+            class="btn"
+            style="
+                background-color: transparent;
+                border: 1px solid var(--accent-green: );
+                color: var(--accent-green: );
+            "
+            onclick="openOrderModal('Аудит')"
+        >
+            Заказать экспресс-аудит AD
+        </button>
+    </div>
+</div>
+
+<!-- Интерактивная логика для захвата лидов -->
+<script>
+    function openOrderModal(type) {
+        alert(
+            `[Заявка отправлена]: Спасибо за интерес к услуге "${type}"!\nНаш ведущий системный архитектор свяжется с вами в течение 15 минут для уточнения деталей вашей инфраструктуры.`,
+        );
+    }
+</script>
