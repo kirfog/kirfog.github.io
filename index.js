@@ -1,10 +1,6 @@
 const fileSystem = {
-  life: [{ file: "life/game.html" }],
-  help: [{ file: "help/debian.html" }],
-  directory: [
-    { file: "directory/freeipa.html" },
-    { file: "directory/user.html" },
-  ],
+  help: [ { file: "help/about.html" }, { file: "help/life.html" }, ],
+  earth: [ { file: "earth/public.html" }, ],
 };
 
 let currentFolderIndex = 0;
@@ -127,6 +123,7 @@ async function loadHtmlFile(filePath) {
     if (outputArea) outputArea.innerHTML = htmlContent;
 
     initCodeBlocks();
+    initDateBadges()
     initGame();
   } catch (error) {
     if (outputArea) {
@@ -191,6 +188,27 @@ function showSuccessState(btn) {
     btn.classList.remove("copied");
   }, 1500);
 }
+
+
+function initDateBadges() {
+  const outputArea = document.getElementById("output-area");
+  if (!outputArea) return;
+
+  const badges = outputArea.querySelectorAll(".status-badge");
+  if (badges.length === 0) return;
+
+  const now = new Date();
+  const formattedDate = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).toUpperCase();
+
+  badges.forEach((badge) => {
+    badge.textContent = `STATUS: ${formattedDate}`;
+  });
+}
+
 
 initFolderMenu();
 changeFolder(true);
